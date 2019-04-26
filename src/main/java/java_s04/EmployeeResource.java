@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.sql.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -27,6 +29,7 @@ import beans.Employee;
 import beans.Gender;
 import beans.Photo;
 import beans.Post;
+import dao.AccountDAO;
 import dao.EmployeeDAO;
 import dao.Param;
 import dao.PhotoDAO;
@@ -41,6 +44,39 @@ public class EmployeeResource {
 	private final EmployeeDAO empDao = new EmployeeDAO();
 	private final PostDAO postDao = new PostDAO();
 	private final PhotoDAO photoDao = new PhotoDAO();
+	private final AccountDAO accDao = new AccountDAO();
+
+
+	/**
+	 * 社員IDとパスワードを受け取ってパスワードを照合する
+	 * 照合に成功した場合はセッションに情報を保持する
+	 * @param empId ログインリクエスト対象の社員ID
+	 * @param pass パスワード
+	 * @return ログインに成功した場合は従業員情報をJSON形式で返す。失敗した場合は空のオブジェクトが返る。
+	 */
+	@POST
+	@Path("login")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Employee login(@QueryParam("empId") String empId,@QueryParam("pass") String pass,HttpServletRequest request){
+		Employee result = null;
+		if(accDao.login(empId, pass) != null){
+			int id = accDao.login(empId, pass).getId();
+			result = empDao.findById(id);
+		}else{
+			return result;
+		}
+
+        HttpSession session = request.getSession();
+
+
+
+
+		return result;
+
+	}
+
+
 
 	/**
 	 * ID指定で従業員情報を取得する。

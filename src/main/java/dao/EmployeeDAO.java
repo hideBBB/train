@@ -32,6 +32,7 @@ public class EmployeeDAO {
 							+"ADDRESS=?,POSTID=?,ENTDATE=?,RETDATE=? WHERE ID = ?";
 	private static final String DELETE_QUERY = "DELETE FROM EMPLOYEE WHERE ID = ?";
 
+
 	/**
 	 * ID指定の検索を実施する。
 	 *
