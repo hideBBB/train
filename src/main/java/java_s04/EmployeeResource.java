@@ -56,21 +56,19 @@ public class EmployeeResource {
 	 */
 	@POST
 	@Path("login")
-	@Consumes(MediaType.APPLICATION_JSON)
+//	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Employee login(@QueryParam("empId") String empId,@QueryParam("pass") String pass,HttpServletRequest request){
 		Employee result = null;
 		if(accDao.login(empId, pass) != null){
 			int id = accDao.login(empId, pass).getId();
 			result = empDao.findById(id);
+
+	        HttpSession session = request.getSession();
+	        session.setAttribute("Employee",result);
 		}else{
 			return result;
 		}
-
-        HttpSession session = request.getSession();
-
-
-
 
 		return result;
 
