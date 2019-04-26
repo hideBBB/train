@@ -23,19 +23,24 @@ function login(){
 	var empId = $('#empId').val();
 	var pass = $('#pass').val();
 
-	var requestQuery = {
-			empId:empId,
-			pass:pass
-	}
+	var formdata = new FormData();
+	formdata.append("empId",empId);
+	formdata.append("pass",pass);
 
+//	var requestQuery = {
+//			empId:empId,
+//			pass:pass
+//	}
+//
+//	console.log(requestQuery);
 
 	$.ajax({
 		type : "POST",
 		url : rootUrl+"/login",
 		dataType : "json",
-		data:requestQuery,
+		data:formdata,
 		contentType : false,
-		processData : false,
+		processData : false
 
 
 	}).then(

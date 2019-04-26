@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -56,9 +57,9 @@ public class EmployeeResource {
 	 */
 	@POST
 	@Path("login")
-//	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Employee login(@QueryParam("empId") String empId,@QueryParam("pass") String pass,HttpServletRequest request){
+	public Employee login(@FormParam("empId") String empId,@FormParam("pass") String pass,HttpServletRequest request){
 		Employee result = null;
 		if(accDao.login(empId, pass) != null){
 			int id = accDao.login(empId, pass).getId();
