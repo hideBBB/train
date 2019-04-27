@@ -15,6 +15,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -53,10 +54,14 @@ public class EmployeeResource {
 	 * @param pass パスワード
 	 * @return ログインに成功した場合は従業員情報をJSON形式で返す。失敗した場合は空のオブジェクトが返る。
 	 */
-	@GET
+	@POST
 	@Path("login")
+//	@Consumes(MediaType.APPLICATION_JSON)
+	//↑メッセージ Unsupported Media Type なので、jsonを受け取ることがデフォではできない模様
+	//他の部分の書き方見ても、dataはurlかformdataにして送っている
+	//formdataでの送り方をもう一度試す必要あり
 	@Produces(MediaType.APPLICATION_JSON)
-	public Employee login(@QueryParam("empId") String empId,@QueryParam("pass") String pass,HttpServletRequest request){
+	public Employee login(@QueryParam("empId") String empId,@QueryParam("pass") String pass,@Context HttpServletRequest request){
 
 //		return empId;
 
@@ -65,6 +70,9 @@ public class EmployeeResource {
 //		return empDao.findById(id);
 
 //		@FormDataParam("empId") String empId,@FormDataParam("pass") String pass,HttpServletRequest request
+
+		System.out.println(empId);
+		System.out.println(request.getParameter("empId"));
 
 
 		Employee result = null;

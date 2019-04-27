@@ -41,12 +41,13 @@ function login(){
 //	console.log(fd.get("pass"));
 
 	$.ajax({
-		type : "GET",
-		url : rootUrl+"/login?empId="+ empId +"&pass=" + pass,
+		type : "POST",
+//		url : rootUrl+"/login?empId="+ empId +"&pass=" + pass,
+		url : rootUrl+"/login",
 		dataType : "json",
 //		data:fd,
 //		data:formdata,
-//		data:requestQuery,
+		data:requestQuery,
 		contentType : false,
 		processData : false
 
