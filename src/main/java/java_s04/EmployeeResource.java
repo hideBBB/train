@@ -5,10 +5,8 @@ import java.sql.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -55,18 +53,27 @@ public class EmployeeResource {
 	 * @param pass パスワード
 	 * @return ログインに成功した場合は従業員情報をJSON形式で返す。失敗した場合は空のオブジェクトが返る。
 	 */
-	@POST
+	@GET
 	@Path("login")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Employee login(@FormParam("empId") String empId,@FormParam("pass") String pass,HttpServletRequest request){
+	public Employee login(@QueryParam("empId") String empId,@QueryParam("pass") String pass,HttpServletRequest request){
+
+//		return empId;
+
+//		return form.getField("empId").getValue();
+
+//		return empDao.findById(id);
+
+//		@FormDataParam("empId") String empId,@FormDataParam("pass") String pass,HttpServletRequest request
+
+
 		Employee result = null;
 		if(accDao.login(empId, pass) != null){
 			int id = accDao.login(empId, pass).getId();
 			result = empDao.findById(id);
 
-	        HttpSession session = request.getSession();
-	        session.setAttribute("Employee",result);
+//	        HttpSession session = request.getSession();
+//	        session.setAttribute("Employee",result);
 		}else{
 			return result;
 		}

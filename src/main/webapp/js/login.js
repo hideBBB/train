@@ -23,42 +23,51 @@ function login(){
 	var empId = $('#empId').val();
 	var pass = $('#pass').val();
 
-	var formdata = new FormData();
-	formdata.append("empId",empId);
-	formdata.append("pass",pass);
-
-//	var requestQuery = {
-//			empId:empId,
-//			pass:pass
-//	}
+//	var formdata = new FormData();
+//	formdata.append("empId",empId);
+//	formdata.append("pass",pass);
 //
-//	console.log(requestQuery);
+//	var id = $('#empId').val();
+
+	var requestQuery = {
+			empId:empId,
+			pass:pass
+	}
+
+//	var fd = new FormData(document.getElementById("loginForm"));
+//
+//
+//	console.log(fd.get("empId"));
+//	console.log(fd.get("pass"));
 
 	$.ajax({
-		type : "POST",
-		url : rootUrl+"/login",
+		type : "GET",
+		url : rootUrl+"/login?empId="+ empId +"&pass=" + pass,
 		dataType : "json",
-		data:formdata,
+//		data:fd,
+//		data:formdata,
+//		data:requestQuery,
 		contentType : false,
 		processData : false
 
 
 	}).then(
 			function(json){
-				if(json != null){
-					console.log(json);
-					var url = "../index.html?empId="+ json.empId +"&name=" + json.name;
-					window.location.href(url);
-				}else{
-					alert("社員IDかパスワードが間違っています");
-				}
+//				if(json != null){
+//					console.log(json);
+//					var url = "../index.html?empId="+ json.empId +"&name=" + json.name;
+//					window.location.href(url);
+//				}else{
+//					alert("社員IDかパスワードが間違っています");
+//				}
 
-
+				console.log(json);
 
 
 			},
 			function(){
 
+				console.log("バカ");
 
 
 			}
