@@ -77,6 +77,22 @@ public class EmployeeResource {
 
 
 	/**
+	 * ログアウトのためにセッションを閉じる
+	 * @return ログアウトに成功した場合はokを返す。
+	 */
+	@GET
+	@Path("logout")
+	public void logout(@Context HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        session.invalidate();
+	}
+
+
+
+
+
+
+	/**
 	 * ID指定で従業員情報を取得する。
 	 *
 	 * @param id 取得対象の従業員のID
