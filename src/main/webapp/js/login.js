@@ -8,10 +8,6 @@ var rootUrl = "/java_s04/api/v1.1/employees";
 
 $('#login').click(login);
 
-
-
-
-
 /**
  * 社員IDとパスワードをサーバーに送り、照合する
  * 照合成功した場合はトップページに遷移
@@ -20,55 +16,31 @@ $('#login').click(login);
  */
 function login(){
 
-	var empId = $('#empId').val();
-	var pass = $('#pass').val();
-
-//	var formdata = new FormData();
-//	formdata.append("empId",empId);
-//	formdata.append("pass",pass);
-//
-//	var id = $('#empId').val();
-
-	var requestQuery = {
-			empId:empId,
-			pass:pass
-	}
-
-//	var fd = new FormData(document.getElementById("loginForm"));
-//
-//
-//	console.log(fd.get("empId"));
-//	console.log(fd.get("pass"));
+	var fd = new FormData(document.getElementById("loginForm"));
 
 	$.ajax({
 		type : "POST",
-//		url : rootUrl+"/login?empId="+ empId +"&pass=" + pass,
 		url : rootUrl+"/login",
 		dataType : "json",
-//		data:fd,
-//		data:formdata,
-		data:requestQuery,
+		data:fd,
 		contentType : false,
 		processData : false
 
-
 	}).then(
 			function(json){
-//				if(json != null){
-//					console.log(json);
+				if(json != null){
+					console.log(json);
 //					var url = "../index.html?empId="+ json.empId +"&name=" + json.name;
 //					window.location.href(url);
-//				}else{
-//					alert("社員IDかパスワードが間違っています");
-//				}
-
-				console.log(json);
+				}else{
+					alert("社員IDかパスワードが間違っています");
+				}
 
 
 			},
 			function(){
 
-				console.log("バカ");
+				alert("ログインに失敗しました。");
 
 
 			}

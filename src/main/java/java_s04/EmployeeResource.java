@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -56,40 +57,23 @@ public class EmployeeResource {
 	 */
 	@POST
 	@Path("login")
-//	@Consumes(MediaType.APPLICATION_JSON)
-	//↑メッセージ Unsupported Media Type なので、jsonを受け取ることがデフォではできない模様
-	//他の部分の書き方見ても、dataはurlかformdataにして送っている
-	//formdataでの送り方をもう一度試す必要あり
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Employee login(@QueryParam("empId") String empId,@QueryParam("pass") String pass,@Context HttpServletRequest request){
-
-//		return empId;
-
-//		return form.getField("empId").getValue();
-
-//		return empDao.findById(id);
-
-//		@FormDataParam("empId") String empId,@FormDataParam("pass") String pass,HttpServletRequest request
-
-		System.out.println(empId);
-		System.out.println(request.getParameter("empId"));
-
+	public Employee login(final FormDataMultiPart form,@Context HttpServletRequest request){
+		String empId = form.getField("empId").getValue();
+		String pass = form.getField("pass").getValue();
 
 		Employee result = null;
 		if(accDao.login(empId, pass) != null){
 			int id = accDao.login(empId, pass).getId();
 			result = empDao.findById(id);
-
-//	        HttpSession session = request.getSession();
-//	        session.setAttribute("Employee",result);
+	        HttpSession session = request.getSession();
+	        session.setAttribute("Employee",result);
 		}else{
 			return result;
 		}
-
 		return result;
-
 	}
-
 
 
 	/**
