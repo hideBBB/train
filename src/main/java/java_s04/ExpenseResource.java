@@ -1,5 +1,7 @@
 package java_s04;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
@@ -26,21 +28,18 @@ public class ExpenseResource {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Expense findByAuth(@Context HttpServletRequest request){
-		Expense result = null;
-
+	public List<Expense> findByAuth(@Context HttpServletRequest request){
         HttpSession session = request.getSession(false);
-        String accountInfo = session.getAttribute("Account").toString();
-        String employeeInfo = session.getAttribute("Employee").toString();
+        //[0]がアカウントID(従業員IDと同じ)、[1]がアカウント権限
+        String[] accountInfo = session.getAttribute("Account").toString().split(",");
 
-        System.out.println(accountInfo);
-        System.out.println(employeeInfo);
+        int id = Integer.parseInt(accountInfo[0]);
+        String auth = accountInfo[1];
 
+        System.out.println(id);
+        System.out.println(auth);
 
-
-
-
-		return result;
+		return expDao.findByAuth(id, auth);
 
 	}
 

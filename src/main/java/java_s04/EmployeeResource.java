@@ -65,16 +65,13 @@ public class EmployeeResource {
 		String pass = form.getField("pass").getValue();
 
 		Employee result = null;
-		Account accountInfo = null;
-		if(accDao.login(empId, pass) != null){
-			accountInfo = accDao.login(empId, pass);
+		Account accountInfo = accDao.login(empId, pass);
+		if(accountInfo != null){
 			result = empDao.findById(accountInfo.getId());
 	        HttpSession session = request.getSession();
 	        session.setAttribute("Employee",result);
 	        //idとauthが入ったAccount型
 	        session.setAttribute("Account", accountInfo);
-
-	        System.out.println(session.getAttribute("Account").toString());
 
 		}else{
 			return result;

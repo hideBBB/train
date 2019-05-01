@@ -39,8 +39,6 @@ public class AccountDAO {
 				result = new Account();
 				result.setId(rs.getInt("ID"));
 				result.setAuth(rs.getString("AUTHORITY"));
-				System.out.println(rs.getInt("ID"));
-				System.out.println(rs.getString("AUTHORITY"));
 
 			}
 		} catch (SQLException e) {
