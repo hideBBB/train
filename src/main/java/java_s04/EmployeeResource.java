@@ -26,6 +26,7 @@ import org.glassfish.jersey.media.multipart.ContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
+import beans.Account;
 import beans.Employee;
 import beans.Gender;
 import beans.Photo;
@@ -64,11 +65,17 @@ public class EmployeeResource {
 		String pass = form.getField("pass").getValue();
 
 		Employee result = null;
+		Account accountInfo = null;
 		if(accDao.login(empId, pass) != null){
-			int id = accDao.login(empId, pass).getId();
-			result = empDao.findById(id);
+			accountInfo = accDao.login(empId, pass);
+			result = empDao.findById(accountInfo.getId());
 	        HttpSession session = request.getSession();
 	        session.setAttribute("Employee",result);
+	        //idとauthが入ったAccount型
+	        session.setAttribute("Account", accountInfo);
+
+	        System.out.println(session.getAttribute("Account").toString());
+
 		}else{
 			return result;
 		}

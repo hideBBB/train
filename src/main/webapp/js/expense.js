@@ -18,7 +18,10 @@ function findByAuth(){
 		type : "GET",
 		url : rootUrl,
 		dataType : "json",
-		success : renderTable
+		success : function(json){
+			console.log(json);
+		}
+//		success : renderTable
 	});
 }
 
@@ -38,12 +41,12 @@ function renderTable(data) {
 		$.each(data, function(index, expense) {
 			var row = $('<tr>');
 			row.append($('<td>').text(expense.id));
-			row.append($('<td>').text(employee.reqDate));
-			row.append($('<td>').text(employee.up_date));
-			row.append($('<td>').text(employee.reqEmpId));
-			row.append($('<td>').text(employee.title));
-			row.append($('<td>').text(employee.amount));
-			row.append($('<td>').text(employee.status));
+			row.append($('<td>').text(expense.reqDate));
+			row.append($('<td>').text(expense.up_date));
+			row.append($('<td>').text(expense.reqEmpId));
+			row.append($('<td>').text(expense.title));
+			row.append($('<td>').text(expense.amount));
+			row.append($('<td>').text(expense.status));
 //			row.append($('<td>').append(
 //					$('<button>').text("詳細").attr("type","button").attr("onclick", "findById("+expense.id+')')
 //				));
