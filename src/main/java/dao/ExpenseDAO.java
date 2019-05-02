@@ -18,7 +18,9 @@ public class ExpenseDAO {
 	 * クエリ文字列
 	 */
 	public static final String SELECT_ALL_QUERY = "SELECT * FROM EXPENSE EX ORDER BY EX.ID";
-	public static final String SELECT_BY_ID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.REQEMPID = ?";
+	public static final String SELECT_BY_EMPID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.REQEMPID = ?";
+	public static final String SELECT_BY_ID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.ID = ?";
+
 
 
 	/**
@@ -38,7 +40,7 @@ public class ExpenseDAO {
 
 		String queryString = SELECT_ALL_QUERY;
 		if("user".equals(auth)){
-			queryString = SELECT_BY_ID_QUERY;
+			queryString = SELECT_BY_EMPID_QUERY;
 		}
 
 		try (PreparedStatement statement = connection.prepareStatement(queryString)) {
@@ -60,6 +62,45 @@ public class ExpenseDAO {
 		return result;
 
 	}
+
+
+	/**
+	 * 権限がadminの場合、全件検索を実施する。userの場合、id指定検索を実行する。
+	 * @param id 経費ID。
+	 * @return 検索結果を収めたExpense型。検索結果が存在しない場合はnullが返る。
+	 */
+	public Expense findById(int id){
+		Expense result = null;
+
+		Connection connection = ConnectionProvider.getConnection();
+		if (connection == null) {
+			return result;
+		}
+
+		String queryString = SELECT_BY_ID_QUERY;
+
+		try (PreparedStatement statement = connection.prepareStatement(queryString)) {
+			statement.setInt(1, id);
+
+			ResultSet rs = statement.executeQuery();
+
+			if (rs.next()) {
+				result = processRow(rs);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionProvider.close(connection);
+		}
+
+		return result;
+
+	}
+
+
+
+
+
 
 
 

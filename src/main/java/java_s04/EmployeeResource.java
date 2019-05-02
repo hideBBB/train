@@ -91,6 +91,20 @@ public class EmployeeResource {
         session.invalidate();
 	}
 
+	/**
+	 * ユーザー権限情報の取得
+	 * @return ユーザー権限のString型をJSON形式で返す。
+	 */
+	@GET
+	@Path("auth")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String catchAuth(@Context HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        String auth = session.getAttribute("Account").toString().split(",")[1];
+        return auth;
+	}
+
+
 
 
 

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -36,12 +37,21 @@ public class ExpenseResource {
         int id = Integer.parseInt(accountInfo[0]);
         String auth = accountInfo[1];
 
-        System.out.println(id);
-        System.out.println(auth);
 
 		return expDao.findByAuth(id, auth);
 
 	}
 
+
+	/**
+	 * 経費IDで経費情報を検索する
+	 * @return Expense型をJSON形式で返す。失敗した場合は空のオブジェクトが返る
+	 */
+	@GET
+	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Expense findById(@PathParam("id") int id, @Context HttpServletRequest request){
+		return expDao.findById(id);
+	}
 
 }
