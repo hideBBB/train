@@ -2,6 +2,7 @@
  *
  */
 var rootUrl = "/java_s04/api/v1.1/expenses";
+var empUrl = "/java_s04/api/v1.1/employees";
 
 initPage();
 
@@ -18,16 +19,13 @@ function findByAuth(){
 		type : "GET",
 		url : rootUrl,
 		dataType : "json",
-		success : function(json){
-			console.log(json);
-		}
-//		success : renderTable
+		success : renderTable
 	});
 }
 
 
 function renderTable(data) {
-	var headerRow = '<tr><th>社員ID</th><th>氏名</th></tr>';
+	var headerRow = '<tr><th>申請ID</th><th>申請日</th><th>更新日</th><th>申請者</th><th>タイトル</th><th>金額</th><th>ステータス</th></tr>';
 
 	$('#expenses').children().remove();
 
@@ -43,17 +41,27 @@ function renderTable(data) {
 			row.append($('<td>').text(expense.id));
 			row.append($('<td>').text(expense.reqDate));
 			row.append($('<td>').text(expense.up_date));
-			row.append($('<td>').text(expense.reqEmpId));
-			row.append($('<td>').text(expense.title));
-			row.append($('<td>').text(expense.amount));
-			row.append($('<td>').text(expense.status));
-//			row.append($('<td>').append(
-//					$('<button>').text("詳細").attr("type","button").attr("onclick", "findById("+expense.id+')')
-//				));
-//			row.append($('<td>').append(
-//					$('<button>').text("削除").attr("type","button").attr("onclick", "deleteById("+employee.id+')')
-//				));
-			table.append(row);
+
+			$.ajax({
+				type : "GET",
+				url : empUrl + "/" + expense.reqEmpId,
+				dataType : "json",
+				success : function(data){
+					row.append($('<td>').text(data.name));
+					row.append($('<td>').text(expense.title));
+					row.append($('<td>').text(expense.amount));
+					row.append($('<td>').text(expense.status));
+//					row.append($('<td>').append(
+//							$('<button>').text("詳細").attr("type","button").attr("onclick", "findById("+expense.id+')')
+//						));
+//					row.append($('<td>').append(
+//							$('<button>').text("削除").attr("type","button").attr("onclick", "deleteById("+employee.id+')')
+//						));
+					table.append(row);
+
+				}
+			});
+
 		});
 
 		$('#expenses').append(table);

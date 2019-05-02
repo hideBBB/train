@@ -50,8 +50,6 @@ public class ExpenseDAO {
 
 			while (rs.next()) {
 				result.add(processRow(rs));
-		        System.out.println(rs.getString("TITLE"));
-
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
