@@ -35,14 +35,50 @@ function findById(id){
 	});
 }
 
-function approveUpdate(){
+function approveUpdate(id){
+	console.log(id);
+
+	var fd = new FormData();
+	fd.append("status","承認済");
+
+	console.log('approveUpdate start.')
+	$.ajax({
+		type : "PUT",
+		url : rootUrl+"/"+id,
+		dataType : "json",
+		data : fd,
+		contentType : false,
+		processData : false,
+		success : function(data){
+			alert("経費申請を承認しました。");
+			renderDetails(data);
+		}
+	});
 
 }
 
 
-function rejectUpdate(){
+function rejectUpdate(id){
 
-	console.log($('#reason').val());
+	var fd = new FormData();
+	fd.append("status","却下："+$('#reason').val());
+
+	console.log('rejectUpdate start.')
+	$.ajax({
+		type : "PUT",
+		url : rootUrl+"/"+id,
+		dataType : "json",
+		data : fd,
+		contentType : false,
+		processData : false,
+		success : function(data){
+			alert("経費申請を却下しました。");
+			renderDetails(data);
+		}
+	});
+
+
+//	console.log($('#reason').val());
 
 }
 
@@ -64,7 +100,7 @@ function renderTable(data) {
 			var row = $('<tr>');
 			row.append($('<td>').text(expense.id));
 			row.append($('<td>').text(expense.reqDate));
-			row.append($('<td>').text(expense.up_date));
+			row.append($('<td>').text(expense.up_Date));
 
 			$.ajax({
 				type : "GET",
@@ -106,7 +142,7 @@ function renderDetails(data) {
 	var row = $('<tr>');
 	row.append($('<td>').text(data.id));
 	row.append($('<td>').text(data.reqDate));
-	row.append($('<td>').text(data.up_date));
+	row.append($('<td>').text(data.up_Date));
 
 
 	//申請者名前の問い合わせ
@@ -129,14 +165,14 @@ function renderDetails(data) {
 			if(data.up_EmpId != 0){
 				$.ajax({
 					type : "GET",
-					url : empUrl + "/" + data.uo_EmpId,
+					url : empUrl + "/" + data.up_EmpId,
 					dataType : "json",
 					success : function(json){
 						row.append($('<td>').text(json.name));
 						table.append(row);
 						$('#expenseDetail').html(table);
 						if(buttonFlg){
-							catchAuth();
+							catchAuth(data.id);
 						}
 					}
 
@@ -146,7 +182,7 @@ function renderDetails(data) {
 				table.append(row);
 				$('#expenseDetail').html(table);
 				if(buttonFlg){
-					catchAuth();
+					catchAuth(data.id);
 				}
 			}
 
@@ -158,8 +194,7 @@ function renderDetails(data) {
 
 
 //権限がadminの場合のみボタンをセットする
-function catchAuth(){
-
+function catchAuth(id){
 	var row = $('<div>');
 	//権限の問い合わせ
 	$.ajax({
@@ -168,8 +203,8 @@ function catchAuth(){
 		dataType : "text",
 		success : function(data){
 			if(data == "admin"){
-				row.append($('<button>').text("承認").attr("type","button").attr("onclick","approveUpdate()"));
-				row.append($('<button>').text("却下").attr("type","button").attr("onclick","rejectUpdate()"));
+				row.append($('<button>').text("承認").attr("type","button").attr("onclick","approveUpdate("+id+")"));
+				row.append($('<button>').text("却下").attr("type","button").attr("onclick","rejectUpdate("+id+")"));
 				row.append($('<br>'));
 				row.append($('<textarea>').attr("placeholder","却下理由").attr("rows","5").attr("cols","40").attr("id","reason"));
 

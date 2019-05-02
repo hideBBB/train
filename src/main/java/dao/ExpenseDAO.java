@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import beans.Expense;
@@ -20,6 +21,7 @@ public class ExpenseDAO {
 	public static final String SELECT_ALL_QUERY = "SELECT * FROM EXPENSE EX ORDER BY EX.ID";
 	public static final String SELECT_BY_EMPID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.REQEMPID = ?";
 	public static final String SELECT_BY_ID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.ID = ?";
+	public static final String UPDATE_BY_ID_QUERY = "UPDATE EXPENSE E SET E.UP_DATE=?, E.UP_EMPID=?, E.STATUS=? WHERE E.ID=?";
 
 
 
@@ -98,6 +100,45 @@ public class ExpenseDAO {
 	}
 
 
+	/**
+	 * 申請のステータスを更新する
+	 * @param id 経費ID。
+	 * @param status 承認済 or 却下理由
+	 * @param up_EmpId 更新者ID
+	 * @return 更新が成功したときにはOKがString型で返る
+	 */
+	public String update(int up_EmpId,String status,int id){
+		String result = "NG";
+
+		Connection connection = ConnectionProvider.getConnection();
+		if (connection == null) {
+			return result;
+		}
+
+		String queryString = UPDATE_BY_ID_QUERY;
+
+		try (PreparedStatement statement = connection.prepareStatement(queryString)) {
+			statement.setString(1, calendar());
+			statement.setInt(2, up_EmpId);
+			statement.setString(3, status);
+			statement.setInt(4, id);
+
+
+			statement.executeUpdate();
+
+			result = "OK";
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionProvider.close(connection);
+		}
+
+		return result;
+
+	}
+
+
 
 
 
@@ -137,6 +178,32 @@ public class ExpenseDAO {
 
 
 
+
+	/**
+	 * 現在日付を整えて返す
+	 * @return 日付（2019-04-01）
+	 */
+	private String calendar(){
+		Calendar cal = Calendar.getInstance();
+		String year = String.valueOf(cal.get(Calendar.YEAR));
+		String month = String.valueOf(cal.get(Calendar.MONTH)+1); //月は「一月」が0であらわされる
+		String date = String.valueOf(cal.get(Calendar.DATE));
+
+		//月と日付が一桁なら先頭に0をつける
+		month = formatDate(month);
+		date = formatDate(date);
+
+		return year+"-"+month+"-"+date;
+
+
+	}
+
+	private String formatDate(String num){
+		if(num.length() == 1){
+			num = "0"+num;
+		}
+		return num;
+	}
 
 
 
