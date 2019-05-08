@@ -43,5 +43,18 @@ public class ExpenseResource {
 
 	}
 
+	/**
+	 * これまでに申請されている申請数を返す
+	 * @return 申請数をint型で返す
+	 */
+	@GET
+	@Path("numOfRequest")
+	@Produces(MediaType.APPLICATION_JSON)
+	public int findLastId(){
+		//全リストを取得して申請数を返す
+		return expDao.findByAuth(1, "admin").size();
+
+	}
+
 
 }

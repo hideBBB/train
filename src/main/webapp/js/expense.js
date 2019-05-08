@@ -6,6 +6,13 @@ var empUrl = "/java_s04/api/v1.1/employees";
 
 initPage();
 
+$('#newRegist').click(registMenu);
+
+
+
+
+
+
 function initPage(){
 
 findByAuth();
@@ -22,6 +29,42 @@ function findByAuth(){
 		success : renderTable
 	});
 }
+
+
+
+
+function registMenu(){
+	console.log('registMenu start.');
+
+	$.ajax({
+		type : "GET",
+		url : rootUrl+"/numOfRequest",
+		dataType : "json",
+		success : function(data){
+			var registId = data+1;
+			var menu = "申請ID : <input type='text' readonly='readonly' value='"+registId+"'><br>" +
+					"申請日 : <br>" +
+					"申請者 : <br>" +
+					"タイトル : <br>" +
+					"支払先 : <br>" +
+					"金額 : <br>" +
+					"ステータス : <input type='text' readonly='readonly' value='申請中'>";
+
+
+
+
+
+			$('#registMenu').html(menu);
+		}
+
+
+
+	});
+
+}
+
+
+
 
 
 function renderTable(data) {
