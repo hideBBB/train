@@ -10,7 +10,6 @@ initPage();
 function initPage(){
 
 findByAuth();
-//catchAuth();
 
 }
 
@@ -106,6 +105,7 @@ function renderTable(data) {
 				type : "GET",
 				url : empUrl + "/" + expense.reqEmpId,
 				dataType : "json",
+				async: false,
 				success : function(data){
 					row.append($('<td>').text(data.name));
 					row.append($('<td>').text(expense.title));
@@ -150,6 +150,7 @@ function renderDetails(data) {
 		type : "GET",
 		url : empUrl + "/" + data.reqEmpId,
 		dataType : "json",
+		async : false,
 		success : function(json){
 			row.append($('<td>').text(json.name));
 			row.append($('<td>').text(data.title));
@@ -167,6 +168,7 @@ function renderDetails(data) {
 					type : "GET",
 					url : empUrl + "/" + data.up_EmpId,
 					dataType : "json",
+					async : false,
 					success : function(json){
 						row.append($('<td>').text(json.name));
 						table.append(row);
