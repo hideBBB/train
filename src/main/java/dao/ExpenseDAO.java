@@ -19,10 +19,12 @@ public class ExpenseDAO {
 	 * クエリ文字列
 	 */
 	public static final String SELECT_ALL_QUERY = "SELECT * FROM EXPENSE EX ORDER BY EX.ID";
-	public static final String SELECT_BY_EMPID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.REQEMPID = ?";
-	public static final String SELECT_BY_ID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.ID = ?";
+	public static final String SELECT_BY_EMPID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.REQEMPID = ? ORDER BY EX.ID";
+	public static final String SELECT_BY_ID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.ID = ? ORDER BY EX.ID";
 	public static final String UPDATE_BY_ID_QUERY = "UPDATE EXPENSE E SET E.UP_DATE=?, E.UP_EMPID=?, E.STATUS=? WHERE E.ID=?";
-
+	public static final String INSERT_QUERY = "INSERT INTO EXPENSE E " +
+			"(E.ID,E.REQDATE,E.UP_DATE,E.REQEMPID,E.UP_EMPID,E.TITLE,E.PAYDESTINATION,E.AMOUNT,E.STATUS) " +
+			"VALUES(?,?,?,?,?,?,?,?,?)";
 
 
 	/**
@@ -139,7 +141,46 @@ public class ExpenseDAO {
 	}
 
 
+	/**
+	 * 申請を新規に登録する
+	 * @param Expense 登録したいExpense型
+	 * @return 更新が成功したときにはOKがString型で返る
+	 */
+	public String creat(Expense exp){
+		String result = "NG";
 
+		exp.setReqDate(calendar());
+
+		Connection connection = ConnectionProvider.getConnection();
+		if (connection == null) {
+			return result;
+		}
+
+		String queryString = INSERT_QUERY;
+
+		try (PreparedStatement statement = connection.prepareStatement(queryString)) {
+			statement.setInt(1, exp.getId());
+			statement.setString(2, exp.getReqDate());
+			statement.setString(3, null); //更新はまだないのでnull
+			statement.setInt(4, exp.getReqEmpId());
+			statement.setObject(5, null);
+			statement.setString(6, exp.getTitle());
+			statement.setString(7, exp.getPayDest());
+			statement.setInt(8, exp.getAmount());
+			statement.setString(9, exp.getStatus());
+
+			statement.executeUpdate();
+
+			result = "OK";
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionProvider.close(connection);
+		}
+
+		return result;
+	}
 
 
 

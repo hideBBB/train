@@ -99,21 +99,42 @@ function registMenu(){
 		dataType : "json",
 		success : function(data){
 			var registId = data+1;
-			var menu = "<form id='registForm'>" +
-					"申請ID : <input type='text' name='id' readonly='readonly' value='"+registId+"'><br>" +
+			var menu = 	"申請ID : <input type='text' name='id' readonly='readonly' value='"+registId+"'><br>" +
 					"タイトル : <input type='text' name='title'><br>" +
 					"支払先 : <input type='text' name='payDest'><br>" +
-					"金額 : <input type='text' name='ammount'>";
+					"金額 : <input type='text' name='amount'><br>" +
+					"<input type='button' id='regist' value='申請' onclick='newRegist()'>" +
+					"<input type='button' onclick='location.href=`./Expense.html`' value='キャンセル'>";
 
-
-
-
-			$('#registMenu').html(menu);
+			$('#registForm').html(menu);
 		}
 
+	});
 
+}
+
+function newRegist(){
+	console.log("newRegist start.");
+	var fd = new FormData(document.getElementById("registForm"));
+
+	$.ajax({
+		type : "POST",
+		url : rootUrl,
+		dataType : "json",
+		contentType : false,
+		processData : false,
+		data : fd,
+		success : function(){
+			alert("登録が完了しました。");
+			window.location.href = "./Expense.html";
+		},
+		error : function(){
+			alert("登録に失敗しました。");
+		}
 
 	});
+
+
 
 }
 
@@ -248,9 +269,6 @@ function catchAuth(id){
 				row.append($('<br>'));
 				row.append($('<textarea>').attr("placeholder","却下理由").attr("rows","5").attr("cols","40").attr("id","reason"));
 
-//				row.append($('<td>').append(
-//						$('<button>').text("承認").attr("type","button").attr("onclick", "findById("+expense.id+')')
-//					));
 				$('#expenseDetail').append(row);
 
 			}

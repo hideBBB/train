@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -112,6 +113,29 @@ public class ExpenseResource {
 	}
 
 
+	/**
+	 * 経費申請を登録する
+	 * Expense型に情報を詰めて、Daoに渡す
+	 */
+	@POST
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+//	@Produces(MediaType.APPLICATION_JSON)
+	public void newRegist(final FormDataMultiPart form,@Context HttpServletRequest request){
+		Expense expense = new Expense();
 
+		HttpSession session = request.getSession(false);
+
+		expense.setId(Integer.parseInt(form.getField("id").getValue()));
+		int reqEmpId = Integer.parseInt(session.getAttribute("Employee").toString().split(",")[0]);
+		expense.setReqEmpId(reqEmpId);
+		expense.setTitle(form.getField("title").getValue());
+		expense.setPayDest(form.getField("payDest").getValue());
+		int amount = Integer.parseInt(form.getField("amount").getValue());
+		expense.setAmount(amount);
+		expense.setStatus("申請中");
+
+		expDao.creat(expense);
+
+	}
 
 }
