@@ -92,6 +92,29 @@ public class EmployeeResource {
 	}
 
 	/**
+	 * ログインしているユーザー情報を取得する
+	 * @return ログインしているユーザー名、ユーザーIDを返す。ログインしていなかった場合nullが入った配列を返す。
+	 */
+	@GET
+	@Path("user")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String[] userInfo(@Context HttpServletRequest request){
+		String[] result = new String[2];
+		HttpSession session = request.getSession(false);
+
+		//ログインしているかチェック
+		if(session == null){
+			return result;
+		}
+
+		//ログインしているユーザー名、ユーザーIDをセット
+		result[0] = session.getAttribute("Employee").toString().split(",")[1];
+		result[1] = session.getAttribute("Employee").toString().split(",")[2];
+
+        return result;
+	}
+
+	/**
 	 * ユーザー権限情報の取得
 	 * @return ユーザー権限のString型をJSON形式で返す。
 	 */

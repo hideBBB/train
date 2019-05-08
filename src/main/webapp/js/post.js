@@ -1,8 +1,35 @@
 'use strict';
 
 var rootUrl = "/java_s04/api/v1.1/posts";
+var empUrl = "/java_s04/api/v1.1/employees";
 
 findAll();
+header();
+
+function header(){
+	$.ajax({
+		type : "GET",
+		url : empUrl+"/user",
+		dataType : "json",
+		success : function(data){
+			console.log(data);
+
+			if(data[0] != null){
+				var userInfo = "従業員ID："+data[0]+", 従業員名："+data[1];
+
+				$('#header').append(userInfo);
+
+			}else{
+				$('#header').append("ログインしていません");
+			}
+
+
+		}
+
+	})
+
+}
+
 
 $('#savePost').click(function() {
 	var name = $('#name').val();

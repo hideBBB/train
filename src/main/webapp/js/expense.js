@@ -5,6 +5,33 @@ var rootUrl = "/java_s04/api/v1.1/expenses";
 var empUrl = "/java_s04/api/v1.1/employees";
 
 initPage();
+header();
+
+
+function header(){
+	$.ajax({
+		type : "GET",
+		url : empUrl+"/user",
+		dataType : "json",
+		success : function(data){
+			console.log(data);
+
+			if(data[0] != null){
+				var userInfo = "従業員ID："+data[0]+", 従業員名："+data[1];
+
+				$('#header').append(userInfo);
+
+			}else{
+				$('#header').append("ログインしていません");
+			}
+
+
+		}
+
+	})
+
+}
+
 
 function initPage(){
 
@@ -107,7 +134,7 @@ function registMenu(){
 			dataType : "json",
 			success : function(data){
 				var registId = data+1;
-				var menu = 	"申請ID : <input type='text' name='id' readonly='readonly' value='"+registId+"'><br>" +
+				var menu = 	"申請ID : <input type='text' name='id' disabled value='"+registId+"'><br>" +
 						"タイトル : <input type='text' name='title'><br>" +
 						"支払先 : <input type='text' name='payDest'><br>" +
 						"金額 : <input type='text' name='amount'><br>" +
@@ -120,7 +147,7 @@ function registMenu(){
 		});
 
 	}else{
-		var menu = 	"更新対象ID : <input type='text' name='id' readonly='readonly' value='"+$('#id').text()+"'><br>" +
+		var menu = 	"更新対象ID : <input type='text' name='id' disabled value='"+$('#id').text()+"'><br>" +
 		"タイトル : <input type='text' name='title' value='"+$('#title').text()+"'><br>" +
 		"支払先 : <input type='text' name='payDest' value='"+$('#payDest').text()+"'><br>" +
 		"金額 : <input type='text' name='amount' value='"+$('#amount').text()+"'><br>" +
