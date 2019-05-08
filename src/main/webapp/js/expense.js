@@ -6,10 +6,6 @@ var empUrl = "/java_s04/api/v1.1/employees";
 
 initPage();
 
-$('#newRegist').click(registMenu);
-
-
-
 function initPage(){
 
 findByAuth();
@@ -88,31 +84,59 @@ function rejectUpdate(id){
 
 
 /**
- * 新規申請インプットメニューを表示する
+ * 新規申請・更新インプットメニューを表示する
  */
+function updateFlg(){
+	$('#updateFlg').attr("value","true");
+	registMenu();
+}
+
+function newRegistFlg(){
+	$('#updateFlg').attr("value","false");
+	registMenu();
+}
+
+
 function registMenu(){
 	console.log('registMenu start.');
 
-	$.ajax({
-		type : "GET",
-		url : rootUrl+"/numOfRequest",
-		dataType : "json",
-		success : function(data){
-			var registId = data+1;
-			var menu = 	"申請ID : <input type='text' name='id' readonly='readonly' value='"+registId+"'><br>" +
-					"タイトル : <input type='text' name='title'><br>" +
-					"支払先 : <input type='text' name='payDest'><br>" +
-					"金額 : <input type='text' name='amount'><br>" +
-					"<input type='button' id='regist' value='申請' onclick='newRegist()'>" +
-					"<input type='button' onclick='location.href=`./Expense.html`' value='キャンセル'>";
+	if($('#updateFlg').val() == "false"){
+		$.ajax({
+			type : "GET",
+			url : rootUrl+"/numOfRequest",
+			dataType : "json",
+			success : function(data){
+				var registId = data+1;
+				var menu = 	"申請ID : <input type='text' name='id' readonly='readonly' value='"+registId+"'><br>" +
+						"タイトル : <input type='text' name='title'><br>" +
+						"支払先 : <input type='text' name='payDest'><br>" +
+						"金額 : <input type='text' name='amount'><br>" +
+						"<input type='button' id='regist' value='申請' onclick='newRegist()'>" +
+						"<input type='button' onclick='location.href=`./Expense.html`' value='キャンセル'>";
 
-			$('#registForm').html(menu);
-		}
+				$('#registForm').html(menu);
+			}
 
-	});
+		});
 
+	}else{
+		var menu = 	"更新対象ID : <input type='text' name='id' readonly='readonly' value='"+$('#id').text()+"'><br>" +
+		"タイトル : <input type='text' name='title' value='"+$('#title').text()+"'><br>" +
+		"支払先 : <input type='text' name='payDest' value='"+$('#payDest').text()+"'><br>" +
+		"金額 : <input type='text' name='amount' value='"+$('#amount').text()+"'><br>" +
+		"<input type='button' id='regist' value='更新' onclick='update()'>" +
+		"<input type='button' onclick='location.href=`./Expense.html`' value='キャンセル'>";
+
+		$('#registForm').html(menu);
+
+
+	}
 }
 
+
+/**
+ * 新規登録
+ */
 function newRegist(){
 	console.log("newRegist start.");
 	var fd = new FormData(document.getElementById("registForm"));
@@ -134,10 +158,35 @@ function newRegist(){
 
 	});
 
+}
+
+
+/**
+ * 更新
+ */
+function update(){
+	console.log("update start.");
+	var fd = new FormData(document.getElementById("registForm"));
+
+	$.ajax({
+		type : "POST",
+		url : rootUrl+"/update",
+		dataType : "json",
+		contentType : false,
+		processData : false,
+		data : fd,
+		success : function(data){
+			alert("更新が完了しました。");
+			renderDetails(data);
+		},
+		error : function(){
+			alert("更新に失敗しました。");
+		}
+
+	});
 
 
 }
-
 
 
 
@@ -148,7 +197,7 @@ function renderTable(data) {
 	$('#expenses').children().remove();
 
 	if (data.length === 0) {
-		$('#expenses').append('<p>現在データが存在していません。</p>')
+		$('#expenses').append('<p>ログインしていない、もしくはデータが存在していません。</p>')
 	} else {
 		var table = $('<table>').attr('border', 1);
 		table.append(headerRow);
@@ -174,6 +223,7 @@ function renderTable(data) {
 							$('<button>').text("詳細").attr("type","button").attr("onclick", "findById("+expense.id+')')
 						));
 
+
 					table.append(row);
 
 				}
@@ -181,7 +231,13 @@ function renderTable(data) {
 
 		});
 
+		var registButton = $('<input>').attr("type","button").attr("id","newRegist").attr("value","新規申請");
 		$('#expenses').append(table);
+		$('#expenses').append(registButton);
+
+		$('#newRegist').click(newRegistFlg);
+
+
 	}
 }
 
@@ -199,7 +255,7 @@ function renderDetails(data) {
 	table.append(headerRow);
 
 	var row = $('<tr>');
-	row.append($('<td>').text(data.id));
+	row.append($('<td>').text(data.id).attr("id","id"));
 	row.append($('<td>').text(data.reqDate));
 	row.append($('<td>').text(data.up_Date));
 
@@ -212,9 +268,9 @@ function renderDetails(data) {
 		async : false,
 		success : function(json){
 			row.append($('<td>').text(json.name));
-			row.append($('<td>').text(data.title));
-			row.append($('<td>').text(data.payDest));
-			row.append($('<td>').text(data.amount));
+			row.append($('<td>').text(data.title).attr("id","title"));
+			row.append($('<td>').text(data.payDest).attr("id","payDest"));
+			row.append($('<td>').text(data.amount).attr("id","amount"));
 			row.append($('<td>').text(data.status));
 			var buttonFlg = true; //ステータスが申請中の場合はtrue
 			if(data.status != "申請中"){
@@ -266,8 +322,11 @@ function catchAuth(id){
 			if(data == "admin"){
 				row.append($('<button>').text("承認").attr("type","button").attr("onclick","approveUpdate("+id+")"));
 				row.append($('<button>').text("却下").attr("type","button").attr("onclick","rejectUpdate("+id+")"));
+				row.append($('<button>').text("更新").attr("type","button").attr("onclick","updateFlg()"));
+				row.append($('<button>').text("戻る").attr("type","button").attr("onclick","location.href=`./Expense.html`"));
 				row.append($('<br>'));
 				row.append($('<textarea>').attr("placeholder","却下理由").attr("rows","5").attr("cols","40").attr("id","reason"));
+				row.append($('<br>'));
 
 				$('#expenseDetail').append(row);
 

@@ -1,5 +1,6 @@
 package java_s04;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +37,13 @@ public class ExpenseResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Expense> findByAuth(@Context HttpServletRequest request){
+		List<Expense> result = new ArrayList<>();
         HttpSession session = request.getSession(false);
+
+		//ログインしているかチェック
+		if(session == null){
+			return result;
+		}
 
         //[0]がアカウントID(従業員IDと同じ)、[1]がアカウント権限
         String[] accountInfo = session.getAttribute("Account").toString().split(",");
@@ -44,8 +51,8 @@ public class ExpenseResource {
         int id = Integer.parseInt(accountInfo[0]);
         String auth = accountInfo[1];
 
-
-		return expDao.findByAuth(id, auth);
+        result = expDao.findByAuth(id, auth);
+		return result;
 
 	}
 
@@ -98,7 +105,7 @@ public class ExpenseResource {
 		HttpSession session = request.getSession(false);
 
 		//ログインしているかチェック
-		if(session.equals(null)){
+		if(session == null){
 			return result;
 		}
 
@@ -106,7 +113,7 @@ public class ExpenseResource {
 		int up_EmpId = Integer.parseInt(session.getAttribute("Account").toString().split(",")[0]);
 		String status = form.getField("status").getValue();
 
-		expDao.update(up_EmpId, status, id);
+		expDao.updateStatus(up_EmpId, status, id);
 
 
 		return expDao.findById(id);
@@ -119,7 +126,6 @@ public class ExpenseResource {
 	 */
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-//	@Produces(MediaType.APPLICATION_JSON)
 	public void newRegist(final FormDataMultiPart form,@Context HttpServletRequest request){
 		Expense expense = new Expense();
 
@@ -137,5 +143,41 @@ public class ExpenseResource {
 		expDao.creat(expense);
 
 	}
+
+
+	/**
+	 * 経費を更新する
+	 * Expense型に更新情報を詰めて、Daoに渡す
+	 * @return 更新したのち、更新後のExpense型を返す。ログインしていなかった場合nullを返す。
+	 */
+	@POST
+	@Path("update")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Expense update(final FormDataMultiPart form,@Context HttpServletRequest request){
+		Expense result = null;
+		Expense expense = new Expense();
+		HttpSession session = request.getSession(false);
+
+		//ログインしているかチェック
+		if(session == null){
+			return result;
+		}
+
+		expense.setId(Integer.parseInt(form.getField("id").getValue()));
+		expense.setTitle(form.getField("title").getValue());
+		expense.setPayDest(form.getField("payDest").getValue());
+		int amount = Integer.parseInt(form.getField("amount").getValue());
+		expense.setAmount(amount);
+		int up_EmpId = Integer.parseInt(session.getAttribute("Employee").toString().split(",")[0]);
+		expense.setUp_EmpId(up_EmpId);
+
+		expDao.update(expense);
+
+		result = expDao.findById(Integer.parseInt(form.getField("id").getValue()));
+
+		return result;
+	}
+
 
 }

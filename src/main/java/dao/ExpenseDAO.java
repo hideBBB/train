@@ -22,6 +22,7 @@ public class ExpenseDAO {
 	public static final String SELECT_BY_EMPID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.REQEMPID = ? ORDER BY EX.ID";
 	public static final String SELECT_BY_ID_QUERY = "SELECT * FROM EXPENSE EX WHERE 1=1 AND EX.ID = ? ORDER BY EX.ID";
 	public static final String UPDATE_BY_ID_QUERY = "UPDATE EXPENSE E SET E.UP_DATE=?, E.UP_EMPID=?, E.STATUS=? WHERE E.ID=?";
+	public static final String UPDATE_QUERY = "UPDATE EXPENSE E SET E.UP_DATE=?,E.UP_EMPID=?,E.TITLE=?,E.PAYDESTINATION=?,E.AMOUNT=? WHERE E.ID=?";
 	public static final String INSERT_QUERY = "INSERT INTO EXPENSE E " +
 			"(E.ID,E.REQDATE,E.UP_DATE,E.REQEMPID,E.UP_EMPID,E.TITLE,E.PAYDESTINATION,E.AMOUNT,E.STATUS) " +
 			"VALUES(?,?,?,?,?,?,?,?,?)";
@@ -109,7 +110,7 @@ public class ExpenseDAO {
 	 * @param up_EmpId 更新者ID
 	 * @return 更新が成功したときにはOKがString型で返る
 	 */
-	public String update(int up_EmpId,String status,int id){
+	public String updateStatus(int up_EmpId,String status,int id){
 		String result = "NG";
 
 		Connection connection = ConnectionProvider.getConnection();
@@ -138,6 +139,44 @@ public class ExpenseDAO {
 
 		return result;
 
+	}
+
+
+	/**
+	 * 間違えて申請したときに更新する
+	 * @param Expense 更新情報が入ったExpense型
+	 * @return 更新が成功した時にはOKがString型で返る
+	 */
+	public String update(Expense exp){
+		String result = "NG";
+
+		Connection connection = ConnectionProvider.getConnection();
+		if (connection == null) {
+			return result;
+		}
+
+		String queryString = UPDATE_QUERY;
+
+		try (PreparedStatement statement = connection.prepareStatement(queryString)) {
+			statement.setString(1, calendar());
+			statement.setInt(2, exp.getUp_EmpId());
+			statement.setString(3, exp.getTitle());
+			statement.setString(4, exp.getPayDest());
+			statement.setInt(5, exp.getAmount());
+			statement.setInt(6, exp.getId());
+
+
+			statement.executeUpdate();
+
+			result = "OK";
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionProvider.close(connection);
+		}
+
+		return result;
 	}
 
 
