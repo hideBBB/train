@@ -87,7 +87,9 @@ function rejectUpdate(id){
 
 
 
-
+/**
+ * 新規申請インプットメニューを表示する
+ */
 function registMenu(){
 	console.log('registMenu start.');
 
@@ -97,14 +99,11 @@ function registMenu(){
 		dataType : "json",
 		success : function(data){
 			var registId = data+1;
-			var menu = "申請ID : <input type='text' readonly='readonly' value='"+registId+"'><br>" +
-					"申請日 : <br>" +
-					"申請者 : <br>" +
-					"タイトル : <br>" +
-					"支払先 : <br>" +
-					"金額 : <br>" +
-					"ステータス : <input type='text' readonly='readonly' value='申請中'>";
-
+			var menu = "<form id='registForm'>" +
+					"申請ID : <input type='text' name='id' readonly='readonly' value='"+registId+"'><br>" +
+					"タイトル : <input type='text' name='title'><br>" +
+					"支払先 : <input type='text' name='payDest'><br>" +
+					"金額 : <input type='text' name='ammount'>";
 
 
 
