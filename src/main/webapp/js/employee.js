@@ -62,6 +62,9 @@ $('#saveEmployee').click(function() {
 	if ($('#postId').val() === '') {
 		$('.error').append('<div>いずれかの部署を選択してください。</div>');
 	}
+	if ($('#password').val() === '') {
+		$('.error').append('<div>パスワードを入力してください。</div>');
+	}
 	if ($('.error').children().length != 0) {
 		return false;
 	}
@@ -222,6 +225,7 @@ function renderDetails(employee) {
 	$('.error').text('');
 	$('#id').val(employee.id);
 	$('#empId').val(employee.empId);
+	$('#password').val("");
 	$('#name').val(employee.name);
 	$('#age').val(employee.age);
 	$('input[name="gender"]').val([ employee.gender ]);

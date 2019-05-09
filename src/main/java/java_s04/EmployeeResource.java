@@ -166,8 +166,8 @@ public class EmployeeResource {
 
 	/**
 	 * 指定した従業員情報を登録する。
-	 *
-	 * @param form 従業員情報（画像含む）を収めたオブジェクト
+	 * EmployeeマスタとAccountマスタに登録する
+	 * @param form 従業員情報（画像含む）を収めたオブジェクト。アカウント情報も含む。
 	 * @return DB上のIDが振られた従業員情報
 	 * @throws WebApplicationException 入力データチェックに失敗した場合に送出される。
 	 */
@@ -177,6 +177,9 @@ public class EmployeeResource {
 	public Employee create(final FormDataMultiPart form) throws WebApplicationException {
 		Employee employee = new Employee();
 
+		/**
+		 * Employeeの情報をつめる
+		 */
 		employee.setId(0);
 		employee.setEmpId(form.getField("empId").getValue());
 		employee.setName(form.getField("name").getValue());
@@ -217,6 +220,14 @@ public class EmployeeResource {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
 		employee.setPost(post);
+
+
+		/**
+		 * Accountの情報をつめる
+		 */
+		accDao.create(form.getField("empId").getValue(), form.getField("password").getValue(), form.getField("auth").getValue());
+
+
 
 		return empDao.create(employee);
 	}
@@ -281,7 +292,7 @@ public class EmployeeResource {
 	}
 
 	/**
-	 * 指定したIDの社員情報を削除する。同時に画像データも削除する。
+	 * 指定したIDの社員情報を削除する。同時に画像データも削除する。同時にアカウント情報も削除する。
 	 *
 	 * @param id 削除対象の社員情報のID
 	 */
@@ -291,6 +302,7 @@ public class EmployeeResource {
 		Employee employee = empDao.findById(id);
 		empDao.remove(id);
 		photoDao.remove(employee.getPhotoId());
+		accDao.remove(id);
 	}
 
 	@GET
