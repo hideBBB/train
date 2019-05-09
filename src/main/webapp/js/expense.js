@@ -260,7 +260,7 @@ function renderTable(data) {
 
 		var registButton = $('<input>').attr("type","button").attr("id","newRegist").attr("value","新規申請");
 		$('#expenses').append(table);
-		$('#expenses').append(registButton);
+		$('#detail').append(registButton);
 
 		$('#newRegist').click(newRegistFlg);
 

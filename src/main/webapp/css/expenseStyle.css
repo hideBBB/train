@@ -14,20 +14,6 @@ th {
 	width: 60%
 }
 
-#insertBlock {
-	margin: 5px 0px
-}
-
-div .error {
-	color: red;
-}
-
-.clearfix::after {
-	content: "";
-	display: block;
-	clear: both;
-}
-
 #header {
 	background-color: aquamarine;
 }

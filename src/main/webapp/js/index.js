@@ -26,7 +26,7 @@ function header(){
 				$('#forLogout').html("<input type='button' id='logout' value='ログアウト'>");
 				$('#logout').click(logout);
 			}else{
-				var html = "<a href='Login.html'>ログインページへ</a>";
+				var html = "<input type='button' value='ログインページ' onclick='location.href=`Login.html`'>";
 				$('#forLogin').html(html);
 			}
 
