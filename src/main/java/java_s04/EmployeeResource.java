@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.sql.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,6 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -23,10 +26,12 @@ import org.glassfish.jersey.media.multipart.ContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
+import beans.Account;
 import beans.Employee;
 import beans.Gender;
 import beans.Photo;
 import beans.Post;
+import dao.AccountDAO;
 import dao.EmployeeDAO;
 import dao.Param;
 import dao.PhotoDAO;
@@ -41,6 +46,92 @@ public class EmployeeResource {
 	private final EmployeeDAO empDao = new EmployeeDAO();
 	private final PostDAO postDao = new PostDAO();
 	private final PhotoDAO photoDao = new PhotoDAO();
+	private final AccountDAO accDao = new AccountDAO();
+
+
+	/**
+	 * 社員IDとパスワードを受け取ってパスワードを照合する
+	 * 照合に成功した場合はセッションに情報を保持する
+	 * @param empId ログインリクエスト対象の社員ID
+	 * @param pass パスワード
+	 * @return ログインに成功した場合は従業員情報をJSON形式で返す。失敗した場合は空のオブジェクトが返る。
+	 */
+	@POST
+	@Path("login")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Employee login(final FormDataMultiPart form,@Context HttpServletRequest request){
+		String empId = form.getField("empId").getValue();
+		String pass = form.getField("pass").getValue();
+
+		Employee result = null;
+		Account accountInfo = accDao.login(empId, pass);
+		if(accountInfo != null){
+			result = empDao.findById(accountInfo.getId());
+	        HttpSession session = request.getSession();
+	        session.setAttribute("Employee",result);
+	        //idとauthが入ったAccount型
+	        session.setAttribute("Account", accountInfo);
+
+		}else{
+			return result;
+		}
+		return result;
+	}
+
+
+	/**
+	 * ログアウトのためにセッションを閉じる
+	 * @return ログアウトに成功した場合はokを返す。
+	 */
+	@GET
+	@Path("logout")
+	public void logout(@Context HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        session.invalidate();
+	}
+
+	/**
+	 * ログインしているユーザー情報を取得する
+	 * @return ログインしているユーザー名、ユーザーIDを返す。ログインしていなかった場合nullが入った配列を返す。
+	 */
+	@GET
+	@Path("user")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String[] userInfo(@Context HttpServletRequest request){
+		String[] result = new String[2];
+		HttpSession session = request.getSession(false);
+
+		//ログインしているかチェック
+		if(session == null){
+			return result;
+		}
+
+		//ログインしているユーザー名、ユーザーIDをセット
+		result[0] = session.getAttribute("Employee").toString().split(",")[1];
+		result[1] = session.getAttribute("Employee").toString().split(",")[2];
+
+        return result;
+	}
+
+	/**
+	 * ユーザー権限情報の取得
+	 * @return ユーザー権限のString型をJSON形式で返す。
+	 */
+	@GET
+	@Path("auth")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String catchAuth(@Context HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        String auth = session.getAttribute("Account").toString().split(",")[1];
+        return auth;
+	}
+
+
+
+
+
+
 
 	/**
 	 * ID指定で従業員情報を取得する。
@@ -75,8 +166,8 @@ public class EmployeeResource {
 
 	/**
 	 * 指定した従業員情報を登録する。
-	 *
-	 * @param form 従業員情報（画像含む）を収めたオブジェクト
+	 * EmployeeマスタとAccountマスタに登録する
+	 * @param form 従業員情報（画像含む）を収めたオブジェクト。アカウント情報も含む。
 	 * @return DB上のIDが振られた従業員情報
 	 * @throws WebApplicationException 入力データチェックに失敗した場合に送出される。
 	 */
@@ -86,6 +177,9 @@ public class EmployeeResource {
 	public Employee create(final FormDataMultiPart form) throws WebApplicationException {
 		Employee employee = new Employee();
 
+		/**
+		 * Employeeの情報をつめる
+		 */
 		employee.setId(0);
 		employee.setEmpId(form.getField("empId").getValue());
 		employee.setName(form.getField("name").getValue());
@@ -126,6 +220,14 @@ public class EmployeeResource {
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
 		employee.setPost(post);
+
+
+		/**
+		 * Accountの情報をつめる
+		 */
+		accDao.create(form.getField("empId").getValue(), form.getField("password").getValue(), form.getField("auth").getValue());
+
+
 
 		return empDao.create(employee);
 	}
@@ -190,7 +292,7 @@ public class EmployeeResource {
 	}
 
 	/**
-	 * 指定したIDの社員情報を削除する。同時に画像データも削除する。
+	 * 指定したIDの社員情報を削除する。同時に画像データも削除する。同時にアカウント情報も削除する。
 	 *
 	 * @param id 削除対象の社員情報のID
 	 */
@@ -200,6 +302,7 @@ public class EmployeeResource {
 		Employee employee = empDao.findById(id);
 		empDao.remove(id);
 		photoDao.remove(employee.getPhotoId());
+		accDao.remove(id);
 	}
 
 	@GET

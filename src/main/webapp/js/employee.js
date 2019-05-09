@@ -5,6 +5,33 @@ var getPostsUrl = "/java_s04/api/v1.1/posts";
 var getPhotoUrl = "/java_s04/api/v1.1/photos";
 
 initPage();
+header();
+
+
+function header(){
+	$.ajax({
+		type : "GET",
+		url : rootUrl+"/user",
+		dataType : "json",
+		success : function(data){
+			console.log(data);
+
+			if(data[0] != null){
+				var userInfo = "従業員ID："+data[0]+", 従業員名："+data[1];
+
+				$('#header').append(userInfo);
+
+			}else{
+				$('#header').append("ログインしていません");
+			}
+
+
+		}
+
+	})
+
+}
+
 
 $('#saveEmployee').click(function() {
 	$('.error').children().remove();
@@ -34,6 +61,9 @@ $('#saveEmployee').click(function() {
 	}
 	if ($('#postId').val() === '') {
 		$('.error').append('<div>いずれかの部署を選択してください。</div>');
+	}
+	if ($('#password').val() === '') {
+		$('.error').append('<div>パスワードを入力してください。</div>');
 	}
 	if ($('.error').children().length != 0) {
 		return false;
@@ -195,6 +225,7 @@ function renderDetails(employee) {
 	$('.error').text('');
 	$('#id').val(employee.id);
 	$('#empId').val(employee.empId);
+	$('#password').val("");
 	$('#name').val(employee.name);
 	$('#age').val(employee.age);
 	$('input[name="gender"]').val([ employee.gender ]);

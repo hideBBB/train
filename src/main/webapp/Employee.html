@@ -9,8 +9,15 @@
 <link rel="stylesheet" href="css/employeeStyle.css">
 </head>
 <body>
+<!-- ヘッダー -->
+<div id="header">
+	<a href="./index.html">TOPページ</a>
+	<a href="./ListPost.html">部署管理ページ</a>
+	<a href="./Expense.html">経費申請管理ページ</a><br>
+</div>
 
-ログイン機能の追加
+
+
 	<div class="main clearfix">
 		<div id="list">
 			<form id="employeeSelector">
@@ -50,6 +57,17 @@
 					<label for="empId">社員ID:</label>
 					<input type="text" maxlength="10" name="empId" id="empId">
 				</div>
+				<div>
+					<label for="password">パスワード:</label>
+            		<input type="password" name="password" id="password">
+            	</div>
+            	<div>
+					<label for="auth">権限:</label>
+					<select name="auth" id="auth">
+            			<option value="admin">管理者</option>
+            			<option value="user">一般従業員</option>
+					</select>
+            	</div>
 				<div>
 					<label for="name">氏名:</label>
 					<input type="text" maxlength="40" name="name" id="name">

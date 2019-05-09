@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="css/expenseStyle.css">
+</head>
+<body>
+
+<!-- ヘッダー -->
+<div id="header">
+	<a href="./index.html">TOPページ</a>
+	<a href="./Employee.html">社員情報管理ページ</a>
+	<a href="./ListPost.html">部署管理ページ</a><br>
+</div>
+
+
+
+
+<div id="list">
+	<p>経費申請一覧:</p>
+	<div id="expenses"></div>
+</div>
+
+
+
+<div id="detail">
+	<p>経費詳細:</p>
+	<div id="expenseDetail"></div>
+</div>
+
+
+
+
+
+
+
+
+<div>
+	<input type="hidden" id="updateFlg" value="false" >
+</div>
+
+<div id="registMenu">
+	<form id="registForm" enctype="multipart/form-data"></form>
+</div>
+
+
+
+
+
+
+
+<!-- javascriptとの紐づけ -->
+		<script src="js/jquery-3.3.1.min.js"></script>
+		<script src="js/expense.js"></script>
+</body>
+</html>
